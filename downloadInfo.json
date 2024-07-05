@@ -2,30 +2,65 @@
     "WMSMultiplayer": {
         "method": "manual",
         "author": "RomeoManll",
-        "latest": "1.0",
+        "latestAvailable": "None",
+        "versions": [
+            "1.0"
+        ],
         "description": "Not released yet, multiplayer version of WMS",
         "link": "https://discord.com/invite/Sy3UHEvnFY"
     },
     "WMS": {
         "method": "manual",
         "author": "RomeoManll",
-        "latest": "1.1.1",
+        "latestAvailable": "1.1.1",
+        "versions": [
+            "1.0",
+            "1.0B",
+            "1.1",
+            "1.1.1",
+            "1.1.1B"
+        ],
         "description": "Worker Murdering Simulator",
         "link": "https://discord.com/invite/Sy3UHEvnFY"
     },
     "WMSModManager": {
         "method": "manual",
         "author": "_n00b_",
-        "latest": "1.1.0",
+        "latestAvailable": "1.0.7",
+        "versions": [
+            "1.0.0",
+            "1.0.1",
+            "1.0.2",
+            "1.0.3",
+            "1.0.4",
+            "1.0.5",
+            "1.0.6",
+            "1.0.7",
+            "1.1.0"
+        ],
         "description": "Mod manager for WMS",
         "link": "https://discord.com/invite/Sy3UHEvnFY",
         "mirrors": ["https://github.com/OtherGamer/WMSModManager"]
     },
     "Example Mod": {
-        "method": "auto",
+        "method": "manual",
         "author": "_n00b_",
-        "latest": "1.0.1",
-        "description": "Example mod for WMSModManager, (will always be in state \"Need to update\" just for test)",
-        "link": "https://github.com/OtherGamer/WMSModManager/ExampleMod.zip",
+        "latestAvailable": "1.0.1",
+        "versions": [
+            "1.0.0",
+            "1.0.1"
+        ],
+        "description": "Example mod for WMSModManager",
+        "link": "https://github.com/OtherGamer/WMSModManager/ExampleMod.zip"
+    },
+    "n00b's weaponpack": {
+        "method": "manual",
+        "author": "_n00b_",
+        "latestAvailable": "1.0.0",
+        "versions": [
+            "1.0.0"
+        ],
+        "description": "Adding more weapons to wms! (Even vehicles! :D)",
+        "link": "https://github.com/OtherGamer/WMSModManager/WeaponPack.zip"
     }
 }
