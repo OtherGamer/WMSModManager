@@ -1,0 +1,26 @@
+#meta files
+
+*.meta
+
+#thunder kit assets
+
+BepInExLaunch.asset
+Config_Folder.asset
+Config_Output.asset
+Default-BepInEx.asset
+Deploy.asset
+Monomod.asset
+PackDestination.asset
+Patchers.asset
+Plugins.asset
+Rebuild and Launch.asset
+Stage.asset
+
+#Forbidden
+
+Assets/Networking
+
+#WMS Game assets
+
+Assets/Sounds/BtnClick.ogg
+Assets/Sounds/BtnHover.ogg
