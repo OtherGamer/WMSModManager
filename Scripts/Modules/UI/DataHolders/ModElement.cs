@@ -10,7 +10,7 @@ namespace WMSModManager.UI
     public class ModElement : MonoBehaviour, IPointerClickHandler
     {
         // Start is called before the first frame update
-        public string modName;
+        public string modID;
         public TextMeshProUGUI ModName;
         public TextMeshProUGUI ModStatus;
         public TextMeshProUGUI ModAuthor;
@@ -40,12 +40,12 @@ namespace WMSModManager.UI
 
         public void UpdateStatus()
         {
-            if (WMSModManagerMain.LoadedMods[modName].restart)
+            if (LifeCycle.mods[modID].restart)
             {
                 ModStatus.text = "<color=\"red\">Restart required</color>";
                 return;
             }
-            Status modStatus = WMSModManagerMain.LoadedMods[modName].status;
+            Status modStatus = LifeCycle.mods[modID].status;
             if (modStatus == Status.Loaded)
             {
                 ModStatus.text = "<color=\"green\">Enabled</color>";

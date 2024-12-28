@@ -1,9 +1,6 @@
 ﻿using BepInEx.Logging;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace WMSModManager
@@ -44,11 +41,13 @@ namespace WMSModManager
         [NonSerialized]
         public string ModPath;
         [NonSerialized]
-        public Status status;
+        public Status status = Status.Loading;
         [NonSerialized]
-        public bool restart;
+        public bool restart = false;
         [NonSerialized]
-        public Dictionary<string, AssetBundle> bundles = new Dictionary<string, AssetBundle>();
+        public List<string> bundles = new List<string>();
+        [NonSerialized]
+        public List<WMSMod> instances = new List<WMSMod>();
         [NonSerialized]
         public ManualLogSource logger;
     }

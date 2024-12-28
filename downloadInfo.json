@@ -1,5 +1,5 @@
 {
-    "WMSMultiplayer": {
+    "wmsmultiplayer": {
         "method": "manual",
         "author": "RomeoManll",
         "latestAvailable": "None",
@@ -9,7 +9,7 @@
         "description": "Not released yet, multiplayer game, information can be changed soon",
         "link": "https://discord.com/invite/Sy3UHEvnFY"
     },
-    "WMS": {
+    "wms": {
         "method": "manual",
         "author": "RomeoManll",
         "latestAvailable": "1.1.1",
@@ -23,7 +23,7 @@
         "description": "Worker Murdering Simulator",
         "link": "https://discord.com/invite/Sy3UHEvnFY"
     },
-    "WMSModManager": {
+    "wmsmm": {
         "method": "manual",
         "author": "_n00b_",
         "latestAvailable": "1.0.7",
@@ -36,13 +36,14 @@
             "1.0.5",
             "1.0.6",
             "1.0.7",
+            "1.0.8",
             "1.1.0"
         ],
         "description": "Mod manager for WMS",
         "link": "https://discord.com/invite/Sy3UHEvnFY",
         "mirrors": ["https://github.com/OtherGamer/WMSModManager"]
     },
-    "Example Mod": {
+    "example_mod": {
         "method": "manual",
         "author": "_n00b_",
         "latestAvailable": "1.0.1",
@@ -53,7 +54,7 @@
         "description": "Example mod for WMSModManager",
         "link": "https://github.com/OtherGamer/WMSModManager/ExampleMod.zip"
     },
-    "n00b's weaponpack": {
+    "n00bs_weaponpack": {
         "method": "manual",
         "author": "_n00b_",
         "latestAvailable": "None",

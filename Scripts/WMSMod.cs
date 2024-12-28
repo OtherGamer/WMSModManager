@@ -1,52 +1,48 @@
-﻿using BepInEx;
-using BepInEx.Logging;
+﻿using BepInEx.Logging;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace WMSModManager
 {
     public class WMSMod : MonoBehaviour
     {
-        public string modName;
+        public string ModID;
         public ManualLogSource Logger;
-        public Dictionary<string, AssetBundle> LoadedBundles = new Dictionary<string, AssetBundle>();
+        public string[] Bundles;
         public string ModFolder;
 
-        public void ModStartup(string ModName)
+        public void ModStartup(string ModID)
         {
             try
             {
-                modName = ModName;
-                Logger = WMSModManagerMain.LoadedMods[modName].logger;
-                LoadedBundles = WMSModManagerMain.LoadedMods[modName].bundles;
-                ModFolder = WMSModManagerMain.LoadedMods[modName].ModPath;
+                this.ModID = ModID;
+                Logger = LifeCycle.mods[ModID].logger;
+                Bundles = LifeCycle.mods[ModID].bundles.ToArray();
+                ModFolder = LifeCycle.mods[ModID].ModPath;
 
-                Logger.LogInfo($"Starting {modName}, version {WMSModManagerMain.LoadedMods[modName].Version}");
+                Logger.LogInfo($"Starting {ModID}, version {LifeCycle.mods[ModID].Version}");
 
                 OnStartup();
 
-                WMSModManagerMain.LoadedMods[modName].status = Status.Loaded;
+                LifeCycle.mods[ModID].status = Status.Loaded;
 
-                if(WMSModManagerMain.modUpdates.ContainsKey(modName))
+                if(WMSModManagerMain.modUpdates.ContainsKey(ModID))
                 {
-                    string internetVersion = WMSModManagerMain.modUpdates[modName];
-                    string currentVersion = WMSModManagerMain.LoadedMods[modName].Version;
+                    string internetVersion = WMSModManagerMain.modUpdates[ModID];
+                    string currentVersion = LifeCycle.mods[ModID].Version;
 
                     if(ModUpdateChecker.CompareVersion(currentVersion, internetVersion)) {
-                        WMSModManagerMain.LoadedMods[modName].status = Status.Update;
+                        LifeCycle.mods[ModID].status = Status.Update;
                     }
                 }
             }
             catch (Exception ex) 
             {
-                Logger.LogError($"Mod {modName} crashed on loading...");
+                Logger.LogError($"Mod {ModID} crashed on loading...");
                 Logger.LogError($"Error: {ex.Message}");
                 Logger.LogError($"Error: {ex.StackTrace}");
-                WMSModManagerMain.LoadedMods[modName].status = Status.Crashed;
+                LifeCycle.mods[ModID].status = Status.Crashed;
             }
             WMSModManagerMain.ModsLoaded++;
         }

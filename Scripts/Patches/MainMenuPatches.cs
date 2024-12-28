@@ -1,8 +1,4 @@
 using MonoMod.RuntimeDetour;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using WMSModManager.UI;
@@ -23,7 +19,7 @@ namespace WMSModManager.Patches
                 allPanels[i].SetActive(value: false);
             }
 
-            WMSModManagerMain.ModP.SetActive(value: true);
+            UIManager.ModP.SetActive(value: true);
         }
 
         public delegate void OpenTab(MainMenuContr self);

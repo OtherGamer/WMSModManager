@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -12,10 +8,10 @@ namespace WMSModManager
 {
     public class LifeCycle
     {
-        private Regex modidChecker = new Regex(@"^[a-z0-9._]+$");
+        private static Regex modidChecker = new Regex(@"^[a-z0-9._]+$");
 
-        public Dictionary<string, ModInfo> mods;
-        bool existOrCreateDir(string path) {
+        public static Dictionary<string, ModInfo> mods = new Dictionary<string, ModInfo>();
+        private static bool existOrCreateDir(string path) {
             if (Directory.Exists(path)) {
                 return true;
             } else {
@@ -28,7 +24,7 @@ namespace WMSModManager
             }
         }
 
-        ModInfo GatherMod(string modFolder) {
+        public static ModInfo GatherMod(string modFolder) {
             if (File.Exists(Path.Combine(modFolder, "mod.json"))) {
                 string modInfoText = File.ReadAllText(Path.Combine(modFolder, "mod.json"));
                 ModInfo modInfo = JsonUtility.FromJson<ModInfo>(modInfoText);
@@ -43,6 +39,18 @@ namespace WMSModManager
                     return null;
                 }
 
+                modInfo.ModPath = modFolder;
+
+                if (!modInfo.Disabled) {
+                    modInfo.logger = BepInEx.Logging.Logger.CreateLogSource(modInfo.ModID);
+                    modInfo.status = Status.Loading;
+                    modInfo.logger.LogMessage($"Collected {modInfo.ModID}");
+
+                    WMSModManagerMain.ModsToBeLoaded++;
+                } else {
+                    modInfo.status = Status.Disabled;
+                }
+
                 return modInfo;
 
             } else {
@@ -51,17 +59,46 @@ namespace WMSModManager
             }
         }
 
-        void LoadMods(string GameFolder) {
-            if (existOrCreateDir(Path.Combine(GameFolder, "Mods"))) {
-                List<Task> tasks = new List<Task>();
+        public static void CollectAssetBundles(ref ModInfo modInfo) {
+            if (Directory.Exists(Path.Combine(modInfo.ModPath, "AssetsBundles"))) {
+                foreach (var assetFile in Directory.GetFiles(Path.Combine(modInfo.ModPath, "AssetsBundles"))) {
+                    if (Path.GetExtension(assetFile).ToLower() != ".manifest") {
+                        modInfo.logger.LogMessage($"Registering {assetFile} asset bundle for {modInfo.ModID}!");
+                        WMSAssetUtils.RegisterAssetBundle(Path.Combine(modInfo.ModPath, "AssetsBundles", assetFile));
+                        modInfo.bundles.Add(assetFile);
+                    }
+                }
+            }
+        }
 
-                foreach (var modsFolder in Directory.GetDirectories(Path.Combine(GameFolder, "Mods")))
-                {
-                    tasks.Add(Task<ModInfo>.Factory.StartNew(() => GatherMod(Path.Combine(GameFolder, "Mods", modsFolder))));
+        public static void LoadMods(string GameFolder) {
+            if (existOrCreateDir(Path.Combine(GameFolder, "Mods"))) {
+                List<Task<ModInfo>> gatheredMods = new List<Task<ModInfo>>();
+
+                foreach (var modsFolder in Directory.GetDirectories(Path.Combine(GameFolder, "Mods"))) {
+                    gatheredMods.Add(Task<ModInfo>.Factory.StartNew(() => GatherMod(Path.Combine(GameFolder, "Mods", modsFolder))));
                 }
 
-                Task.WaitAll(tasks.ToArray());
+                Task.WaitAll(gatheredMods.ToArray());
+                List<Task> loadedAssetBundles = new List<Task>();
 
+                foreach (var item in gatheredMods) {
+                    if (item.Result != null) {
+                        loadedAssetBundles.Add(Task.Factory.StartNew(() => {
+                            ModInfo modInfo = item.Result;
+                            if(mods.ContainsKey(modInfo.ModID)) {
+                                WMSModManagerMain.LOGGER.LogError($"Mod with same ModID {modInfo.ModID} is already loaded!");
+                            }
+                            if(!modInfo.Disabled) {
+                                CollectAssetBundles(ref modInfo);
+                            }
+                            mods[modInfo.ModID] = modInfo;
+                            WMSModManagerMain.ModsLoaded++;
+                        }));
+                    }
+                }
+
+                Task.WaitAll(loadedAssetBundles.ToArray());
 
             } else {
                 WMSModManagerMain.LOGGER.LogFatal("Failed to read or create Mods folder!");

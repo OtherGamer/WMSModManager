@@ -1,28 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TMPro;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using UnityEngine.UIElements;
 using WMSModManager.Patches;
 
 namespace WMSModManager.UI
 {
-    public class UIManager : MonoBehaviour
+    public class UIManager
     {
         private static bool dropdownShowed;
         private static GameObject dropdown;
         private static GameObject Canvas;
 
         public static GameObject ModInfoP;
+        public static GameObject ModP;
 
-        private void Awake()
-        {
+        public static void Start() {
             SceneManager.sceneLoaded += SceneLoaded;
         }
 
@@ -30,7 +23,7 @@ namespace WMSModManager.UI
         {
             if (dropdown == null)
             {
-                dropdown = Instantiate<GameObject>(WMSAssetUtils.getWMSPrefab("DropDown"), Canvas.transform);
+                dropdown = Object.Instantiate(WMSAssetUtils.getWMSPrefab("DropDown"), Canvas.transform);
                 dropdownShowed = true;
             }
             dropdownShowed = true;
@@ -61,7 +54,7 @@ namespace WMSModManager.UI
         {
             if (dropdown == null)
             {
-                dropdown = Instantiate<GameObject>(WMSAssetUtils.getWMSPrefab("DropDown"), Canvas.transform);
+                dropdown = Object.Instantiate(WMSAssetUtils.getWMSPrefab("DropDown"), Canvas.transform);
                 dropdownShowed = true;
             }
             if (dropdownShowed)
@@ -71,26 +64,26 @@ namespace WMSModManager.UI
             }
         }
 
-        public void OpenModTab()
+        public static void OpenModTab()
         {
             MainMenuContr menuContr = GameObject.Find("Canvas").GetComponent<MainMenuContr>();
 
             menuContr.OpenModTab();
         }
 
-        public static void OpenModInfoPanel(string modName)
+        public static void OpenModInfoPanel(string modID)
         {
-            UIManager.CloseDropdown();
+            CloseDropdown();
 
             MainMenuContr menuContr = GameObject.Find("Canvas").GetComponent<MainMenuContr>();
 
-            if (WMSModManagerMain.LoadedMods.ContainsKey(modName))
+            if (LifeCycle.mods.ContainsKey(modID))
             {
                 ModInfoPanel panel = ModInfoP.GetComponent<ModInfoPanel>();
-                panel.ModNameText.text = WMSModManagerMain.LoadedMods[modName].Name;
-                panel.ModAuthorText.text = WMSModManagerMain.LoadedMods[modName].Author;
-                panel.ModVersionText.text = WMSModManagerMain.LoadedMods[modName].Version;
-                panel.ModDescriptionText.text = WMSModManagerMain.LoadedMods[modName].Description;
+                panel.ModNameText.text = LifeCycle.mods[modID].Name;
+                panel.ModAuthorText.text = LifeCycle.mods[modID].Author;
+                panel.ModVersionText.text = LifeCycle.mods[modID].Version;
+                panel.ModDescriptionText.text = LifeCycle.mods[modID].Description;
             }
 
             for(int i = 0; i<menuContr.AllPanels.Length; ++i)
@@ -101,7 +94,7 @@ namespace WMSModManager.UI
             ModInfoP.SetActive(true);
         }
 
-        private void SceneLoaded(Scene scene, LoadSceneMode loadSceneMode)
+        private static void SceneLoaded(Scene scene, LoadSceneMode loadSceneMode)
         {
 
             if (scene != null)
@@ -126,16 +119,15 @@ namespace WMSModManager.UI
                     GameObject simpleBTN = WMSAssetUtils.getWMSPrefab("uibutton");
                     GameObject modPAsset = WMSAssetUtils.getWMSPrefab("modpold");
                     GameObject modElementAsset = WMSAssetUtils.getWMSPrefab("modelement");
-                    GameObject secCanvasAsset = WMSAssetUtils.getWMSPrefab("seccanvas");
                     GameObject modInfoP = WMSAssetUtils.getWMSPrefab("modinfop");
 
                     modPAsset.SetActive(false);
                     modInfoP.SetActive(false);
                     simpleBTN.SetActive(false);
 
-                    GameObject modBtn = Instantiate(simpleBTN, MainMenuP.transform);
-                    WMSModManagerMain.ModP = Instantiate(modPAsset, Canvas.transform);
-                    ModInfoP = Instantiate(modInfoP, Canvas.transform);
+                    GameObject modBtn = Object.Instantiate(simpleBTN, MainMenuP.transform);
+                    ModP = Object.Instantiate(modPAsset, Canvas.transform);
+                    ModInfoP = Object.Instantiate(modInfoP, Canvas.transform);
 
                     modBtn.name = "WMSModBTN";
                     modBtn.GetComponent<UIButton>().buttonText.text = "MODS";
@@ -148,9 +140,9 @@ namespace WMSModManager.UI
                     float minY = 0.0f;
                     float maxY = 0.0f;
 
-                    foreach (var modInfo in WMSModManagerMain.LoadedMods)
+                    foreach (var modInfo in LifeCycle.mods)
                     {
-                        GameObject modElement = Instantiate(modElementAsset, WMSModManagerMain.ModP.transform.GetChild(1).transform);
+                        GameObject modElement = Object.Instantiate(modElementAsset, ModP.transform.GetChild(1).transform);
                         RectTransform rect = modElement.GetComponent<RectTransform>();
                         if (lastYpos == 36000.0f)
                         {
@@ -176,7 +168,7 @@ namespace WMSModManager.UI
                         element.ModName.text = modInfo.Value.Name;
                         element.ModAuthor.text = modInfo.Value.Author;
                         element.ModVersion.text = modInfo.Value.Version;
-                        element.modName = modInfo.Value.Name;
+                        element.modID = modInfo.Value.ModID;
 
                         element.UpdateStatus();
 
@@ -191,15 +183,15 @@ namespace WMSModManager.UI
                     {
                         newAllPanels[i] = allPanelsTMP[i];
                     }
-                    newAllPanels[newAllPanels.Length - 2] = WMSModManagerMain.ModP;
+                    newAllPanels[newAllPanels.Length - 2] = ModP;
                     newAllPanels[newAllPanels.Length - 1] = ModInfoP;
 
                     mainMenuContr.AllPanels = newAllPanels;
 
-                    UI.ScrollBar scrollBar = WMSModManagerMain.ModP.transform.GetChild(1).GetChild(0).gameObject.GetComponent<UI.ScrollBar>();
+                    UI.ScrollBar scrollBar = ModP.transform.GetChild(1).GetChild(0).gameObject.GetComponent<UI.ScrollBar>();
 
                     scrollBar.scrollRes = maxY - minY;
-                    scrollBar.CustomStart(WMSModManagerMain.ModP.transform.GetChild(1).gameObject);
+                    scrollBar.CustomStart(ModP.transform.GetChild(1).gameObject);
 
                     scrollBar.setProgress(0.0f);
 
@@ -214,11 +206,6 @@ namespace WMSModManager.UI
 
                     Canvas.SetActive(true);
 
-                    if (WMSModManagerMain.isLoading)
-                    {
-                        GameObject secCanvas = Instantiate(secCanvasAsset);
-                    }
-
                 }
                 if (scene.name.StartsWith("MT"))
                 {
@@ -227,7 +214,7 @@ namespace WMSModManager.UI
 
                     GameObject modCreditsAsset = WMSAssetUtils.getWMSPrefab("modcredits");
 
-                    GameObject modCredits = Instantiate(modCreditsAsset, UICam.transform);
+                    GameObject modCredits = Object.Instantiate(modCreditsAsset, UICam.transform);
                     modCredits.transform.SetPositionAndRotation(new Vector3(150.0f, 9.0f, -85.25f), Credits.transform.rotation);
 
                 }

@@ -9,7 +9,6 @@ namespace WMSModManager.UI
         private CanvasGroup group;
         private GameObject fCanvas;
         private float timePassed = 0;
-        private bool LoadedCatched = false;
         // Start is called before the first frame update
         void Start()
         {
@@ -24,18 +23,22 @@ namespace WMSModManager.UI
             {
                 timePassed += Time.deltaTime;
             }
-            else
-            {
-                fCanvas.SetActive(false);
+            if (fCanvas != null) {
+                if (timePassed < 1.0f && fCanvas.activeSelf) {
+                    fCanvas.SetActive(false);
+                }
+                if (timePassed >= 1.0f && !fCanvas.activeSelf) {
+                    if (!fCanvas.activeSelf) {
+                        fCanvas.SetActive(true);
+                    }
+                    group.alpha = (2.0f - timePassed);
+                }
+            } else {
+                fCanvas = GameObject.Find("Canvas");
             }
             if(timePassed >= 2.0f)
             {
                 gameObject.SetActive(false);
-            }
-            if (timePassed >= 1.0f)
-            {
-                fCanvas.SetActive(true);
-                group.alpha = (2.0f - timePassed);
             }
         }
     }
